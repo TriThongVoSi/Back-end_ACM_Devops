@@ -1,0 +1,39 @@
+-------------------------------------------------------------------------------
+Test set: org.example.QuanLyMuaVu.controller.AuthenticationControllerTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.861 s <<< FAILURE! -- in org.example.QuanLyMuaVu.controller.AuthenticationControllerTest
+org.example.QuanLyMuaVu.controller.AuthenticationControllerTest.signIn_WithInvalidEmailFormat_Returns400 -- Time elapsed: 0.096 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<400> but was:<401>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at org.example.QuanLyMuaVu.controller.AuthenticationControllerTest.signIn_WithInvalidEmailFormat_Returns400(AuthenticationControllerTest.java:173)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+org.example.QuanLyMuaVu.controller.AuthenticationControllerTest.signIn_WithWrongPassword_Returns401 -- Time elapsed: 0.149 s <<< FAILURE!
+java.lang.AssertionError: JSON path "$.code" expected:<ERR_INVALID_CREDENTIALS> but was:<INVALID_CREDENTIALS>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.util.JsonPathExpectationsHelper.assertValue(JsonPathExpectationsHelper.java:172)
+	at org.springframework.test.web.servlet.result.JsonPathResultMatchers.lambda$value$2(JsonPathResultMatchers.java:112)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at org.example.QuanLyMuaVu.controller.AuthenticationControllerTest.signIn_WithWrongPassword_Returns401(AuthenticationControllerTest.java:114)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+org.example.QuanLyMuaVu.controller.AuthenticationControllerTest.signIn_WithNonExistentEmail_Returns401 -- Time elapsed: 0.089 s <<< FAILURE!
+java.lang.AssertionError: JSON path "$.code" expected:<ERR_INVALID_CREDENTIALS> but was:<INVALID_CREDENTIALS>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.util.JsonPathExpectationsHelper.assertValue(JsonPathExpectationsHelper.java:172)
+	at org.springframework.test.web.servlet.result.JsonPathResultMatchers.lambda$value$2(JsonPathResultMatchers.java:112)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at org.example.QuanLyMuaVu.controller.AuthenticationControllerTest.signIn_WithNonExistentEmail_Returns401(AuthenticationControllerTest.java:130)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

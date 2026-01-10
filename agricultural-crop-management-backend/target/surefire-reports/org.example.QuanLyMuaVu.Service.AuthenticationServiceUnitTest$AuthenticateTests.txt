@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.example.QuanLyMuaVu.Service.AuthenticationServiceUnitTest$AuthenticateTests
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in org.example.QuanLyMuaVu.Service.AuthenticationServiceUnitTest$AuthenticateTests
