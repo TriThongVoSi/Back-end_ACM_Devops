@@ -50,6 +50,9 @@ public class AddressImportService {
 
     /**
      * Automatically import address data on application startup if tables are empty.
+     * Note: We perform the import logic directly here instead of delegating to
+     * importFromSqlFile() to avoid Spring AOP proxy self-invocation issues which
+     * would cause the transaction context to be lost.
      */
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
@@ -59,7 +62,7 @@ public class AddressImportService {
                 log.info("Address tables are empty. Starting automatic import from loc.sql...");
                 ClassPathResource resource = new ClassPathResource("loc.sql");
                 if (resource.exists()) {
-                    ImportResult result = importFromSqlFile(resource.getInputStream());
+                    ImportResult result = doImportFromSqlFile(resource.getInputStream());
                     log.info("Address import completed: {} provinces, {} wards",
                             result.getProvincesImported(), result.getWardsImported());
                 } else {
@@ -80,6 +83,15 @@ public class AddressImportService {
     @Transactional
     @CacheEvict(value = { "provinces", "province", "wards", "ward" }, allEntries = true)
     public ImportResult importFromSqlFile(InputStream inputStream) {
+        return doImportFromSqlFile(inputStream);
+    }
+
+    /**
+     * Internal helper method that performs the actual SQL import logic.
+     * This method is used internally to avoid Spring AOP proxy self-invocation
+     * issues.
+     */
+    private ImportResult doImportFromSqlFile(InputStream inputStream) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             StringBuilder sql = new StringBuilder();
             String line;
@@ -133,7 +145,7 @@ public class AddressImportService {
         log.warn("Force reimport requested. Clearing existing address data...");
         wardRepository.deleteAll();
         provinceRepository.deleteAll();
-        return importFromSqlFile(inputStream);
+        return doImportFromSqlFile(inputStream);
     }
 
     // ==================== PARSING METHODS ====================
