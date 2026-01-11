@@ -3,6 +3,25 @@ app:
     enabled: ${MAIL_ENABLED:true}
 
 spring:
+  # Production database settings
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  # Connection pool settings for production
+  datasource:
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      minimum-idle: 2
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # Mail configuration
   mail:
     host: ${SMTP_HOST}
     port: ${SMTP_PORT:587}
@@ -14,3 +33,20 @@ spring:
           auth: ${SMTP_AUTH:true}
           starttls:
             enable: ${SMTP_STARTTLS:true}
+
+# Production logging - reduced verbosity
+logging:
+  level:
+    root: WARN
+    org.example.QuanLyMuaVu: INFO
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql: WARN
+
+# Swagger - can be disabled in production via env var
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:true}
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:true}

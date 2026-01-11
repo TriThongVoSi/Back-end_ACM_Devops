@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-11T09:08:46+0700",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260101-2150, environment: Java 21.0.9 (Eclipse Adoptium)"
+    date = "2026-01-11T18:00:21+0700",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.2 (Oracle Corporation)"
 )
 @Component
 public class RoleMapperImpl implements RoleMapper {
@@ -23,8 +23,8 @@ public class RoleMapperImpl implements RoleMapper {
         Role.RoleBuilder role = Role.builder();
 
         role.code( request.getCode() );
-        role.description( request.getDescription() );
         role.name( request.getName() );
+        role.description( request.getDescription() );
 
         return role.build();
     }
@@ -39,8 +39,8 @@ public class RoleMapperImpl implements RoleMapper {
 
         roleResponse.id( role.getId() );
         roleResponse.code( role.getCode() );
-        roleResponse.description( role.getDescription() );
         roleResponse.name( role.getName() );
+        roleResponse.description( role.getDescription() );
 
         return roleResponse.build();
     }

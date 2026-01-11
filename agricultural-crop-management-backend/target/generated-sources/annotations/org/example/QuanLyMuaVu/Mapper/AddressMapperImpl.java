@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-11T09:08:46+0700",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260101-2150, environment: Java 21.0.9 (Eclipse Adoptium)"
+    date = "2026-01-11T18:00:21+0700",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.2 (Oracle Corporation)"
 )
 @Component
 public class AddressMapperImpl implements AddressMapper {
@@ -25,9 +25,9 @@ public class AddressMapperImpl implements AddressMapper {
 
         provinceResponse.id( province.getId() );
         provinceResponse.name( province.getName() );
-        provinceResponse.nameWithType( province.getNameWithType() );
         provinceResponse.slug( province.getSlug() );
         provinceResponse.type( province.getType() );
+        provinceResponse.nameWithType( province.getNameWithType() );
 
         return provinceResponse.build();
     }
@@ -43,9 +43,9 @@ public class AddressMapperImpl implements AddressMapper {
         wardResponse.provinceId( wardProvinceId( ward ) );
         wardResponse.id( ward.getId() );
         wardResponse.name( ward.getName() );
-        wardResponse.nameWithType( ward.getNameWithType() );
         wardResponse.slug( ward.getSlug() );
         wardResponse.type( ward.getType() );
+        wardResponse.nameWithType( ward.getNameWithType() );
 
         return wardResponse.build();
     }

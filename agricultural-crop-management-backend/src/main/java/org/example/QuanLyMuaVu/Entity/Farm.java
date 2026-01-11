@@ -16,9 +16,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
 import java.math.BigDecimal;
 
 @Getter
@@ -38,7 +35,6 @@ public class Farm {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "user_id", nullable = true)
-    @NotFound(action = NotFoundAction.IGNORE)
     User user;
 
     @Column(name = "farm_name", nullable = false)
