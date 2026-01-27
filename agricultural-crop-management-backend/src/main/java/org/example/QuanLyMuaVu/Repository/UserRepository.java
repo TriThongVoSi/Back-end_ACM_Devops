@@ -56,6 +56,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
         @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE LOWER(u.email) = LOWER(:identifier) OR LOWER(u.username) = LOWER(:identifier)")
         Optional<User> findByIdentifierWithRoles(@Param("identifier") String identifier);
 
+        /**
+         * Find user by ID with roles eagerly fetched.
+         * Avoids LazyInitializationException when accessing roles outside of
+         * transaction.
+         */
+        @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.id = :id")
+        Optional<User> findByIdWithRoles(@Param("id") Long id);
+
         boolean existsByEmailIgnoreCase(String email);
 
         // ═══════════════════════════════════════════════════════════════

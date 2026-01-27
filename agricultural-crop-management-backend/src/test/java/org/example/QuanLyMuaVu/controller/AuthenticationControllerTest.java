@@ -111,7 +111,7 @@ class AuthenticationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value("ERR_INVALID_CREDENTIALS"));
+                .andExpect(jsonPath("$.code").value("INVALID_CREDENTIALS"));
     }
 
     @Test
@@ -127,7 +127,7 @@ class AuthenticationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value("ERR_INVALID_CREDENTIALS"));
+                .andExpect(jsonPath("$.code").value("INVALID_CREDENTIALS"));
     }
 
     @Test
@@ -170,7 +170,8 @@ class AuthenticationControllerTest {
         mockMvc.perform(post(SIGN_IN_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invalidRequest))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value("INVALID_CREDENTIALS"));
     }
 
     @Test

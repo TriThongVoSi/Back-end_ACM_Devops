@@ -44,6 +44,8 @@ public class UpdateSeasonRequest {
 
     BigDecimal actualYieldKg;
 
+    BigDecimal budgetAmount;
+
     String notes;
 
     /**

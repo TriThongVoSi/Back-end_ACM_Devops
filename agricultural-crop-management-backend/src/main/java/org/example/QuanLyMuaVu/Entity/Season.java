@@ -82,6 +82,9 @@ public class Season {
     @Column(name = "actual_yield_kg")
     BigDecimal actualYieldKg;
 
+    @Column(name = "budget_amount")
+    BigDecimal budgetAmount;
+
     @Column(name = "notes", columnDefinition = "TEXT")
     String notes;
 

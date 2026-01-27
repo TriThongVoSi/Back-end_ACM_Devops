@@ -71,6 +71,7 @@ public class SeasonQueryService {
                         .endDate(season.getEndDate())
                         .plannedHarvestDate(season.getPlannedHarvestDate())
                         .status(season.getStatus() != null ? season.getStatus().name() : null)
+                        .budgetAmount(season.getBudgetAmount())
                         .build())
                 .toList();
     }

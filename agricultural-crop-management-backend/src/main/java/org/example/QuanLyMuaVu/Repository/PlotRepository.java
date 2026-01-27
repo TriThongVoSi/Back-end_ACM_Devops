@@ -3,6 +3,8 @@ package org.example.QuanLyMuaVu.Repository;
 import org.example.QuanLyMuaVu.Entity.Farm;
 import org.example.QuanLyMuaVu.Entity.Plot;
 import org.example.QuanLyMuaVu.Entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +16,10 @@ import java.util.Optional;
 @Repository
 public interface PlotRepository extends JpaRepository<Plot, Integer> {
     List<Plot> findByPlotNameContainingIgnoreCase(String name);
+
+    Page<Plot> findByPlotNameContainingIgnoreCase(String name, Pageable pageable);
+
+    Page<Plot> findByFarm_IdInAndPlotNameContainingIgnoreCase(Iterable<Integer> farmIds, String name, Pageable pageable);
 
     List<Plot> findAllByUser(User user);
 

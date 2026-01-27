@@ -35,6 +35,9 @@ public class AdminReportFilter {
     /** Filter by plot ID */
     private Integer plotId;
 
+    /** Filter by variety ID */
+    private Integer varietyId;
+
     /**
      * Get effective start date for query.
      * Uses fromDate if set, otherwise computes from year.
@@ -63,5 +66,19 @@ public class AdminReportFilter {
             return LocalDate.of(year + 1, 1, 1);
         }
         return null; // No date filtering when year is not specified
+    }
+
+    /**
+     * Get effective end date for inclusive queries.
+     * Uses toDate if set, otherwise returns last day of year when year is set.
+     */
+    public LocalDate getEffectiveToDateInclusive() {
+        if (toDate != null) {
+            return toDate;
+        }
+        if (year != null) {
+            return LocalDate.of(year, 12, 31);
+        }
+        return null;
     }
 }

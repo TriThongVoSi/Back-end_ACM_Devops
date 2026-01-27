@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -28,4 +29,5 @@ public class MySeasonResponse {
     LocalDate endDate;
     LocalDate plannedHarvestDate;
     String status;
+    BigDecimal budgetAmount;
 }

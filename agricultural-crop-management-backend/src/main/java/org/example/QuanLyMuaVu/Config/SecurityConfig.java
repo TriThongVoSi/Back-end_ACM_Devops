@@ -1,5 +1,8 @@
 package org.example.QuanLyMuaVu.Config;
 
+import java.util.Arrays;
+
+import org.example.QuanLyMuaVu.Filter.UserStatusFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,10 +17,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
+import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @EnableWebSecurity
@@ -46,6 +49,9 @@ public class SecurityConfig {
 
         @Autowired
         private CustomJwtDecoder customJwtDecoder;
+
+        @Autowired
+        private UserStatusFilter userStatusFilter;
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -76,9 +82,9 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/v1/inventory/**").hasRole("FARMER")
                                                 // Buyer APIs
                                                 .requestMatchers("/api/v1/buyer/**").hasRole("BUYER")
-                                                // Shared user APIs (BUYER + FARMER)
+                                                // Shared user APIs (BUYER + FARMER + ADMIN)
                                                 .requestMatchers("/api/v1/user/**")
-                                                .hasAnyRole("BUYER", "FARMER")
+                                                .hasAnyRole("ADMIN", "BUYER", "FARMER")
                                                 // Mixed shared features
                                                 .requestMatchers("/api/v1/reports/**", "/api/v1/ai/**")
                                                 .hasRole("BUYER")
@@ -90,7 +96,9 @@ public class SecurityConfig {
                                                                 .decoder(customJwtDecoder)
                                                                 .jwtAuthenticationConverter(
                                                                                 jwtAuthenticationConverter()))
-                                                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
+                                                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
+                                // Add filter to check user status after JWT authentication
+                                .addFilterAfter(userStatusFilter, BearerTokenAuthenticationFilter.class);
 
                 log.info("Cau hinh bao mat da hoan tat thanh cong");
                 log.info("Public endpoints: {}", Arrays.toString(PUBLIC_ENDPOINTS));

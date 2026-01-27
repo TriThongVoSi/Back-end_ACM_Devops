@@ -15,6 +15,20 @@ public class IncidentMapper {
                 .incidentId(incident.getId())
                 .seasonId(incident.getSeason() != null ? incident.getSeason().getId() : null)
                 .seasonName(incident.getSeason() != null ? incident.getSeason().getSeasonName() : null)
+                .plotId(incident.getSeason() != null && incident.getSeason().getPlot() != null
+                        ? incident.getSeason().getPlot().getId()
+                        : null)
+                .plotName(incident.getSeason() != null && incident.getSeason().getPlot() != null
+                        ? incident.getSeason().getPlot().getPlotName()
+                        : null)
+                .farmId(incident.getSeason() != null && incident.getSeason().getPlot() != null
+                        && incident.getSeason().getPlot().getFarm() != null
+                        ? incident.getSeason().getPlot().getFarm().getId()
+                        : null)
+                .farmName(incident.getSeason() != null && incident.getSeason().getPlot() != null
+                        && incident.getSeason().getPlot().getFarm() != null
+                        ? incident.getSeason().getPlot().getFarm().getName()
+                        : null)
                 .reportedById(incident.getReportedBy() != null ? Long.valueOf(incident.getReportedBy().getId()) : null)
                 .reportedByUsername(incident.getReportedBy() != null ? incident.getReportedBy().getUsername() : null)
                 .incidentType(incident.getIncidentType())

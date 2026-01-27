@@ -20,11 +20,15 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,18 +78,23 @@ public class AdminIncidentService {
     /**
      * Get all incidents with optional filters.
      */
-    public PageResponse<IncidentResponse> getAllIncidents(String status, String severity, String type, int page,
-            int size) {
-        log.info("Admin fetching all incidents - status: {}, severity: {}, type: {}, page: {}, size: {}",
-                status, severity, type, page, size);
+    public PageResponse<IncidentResponse> getAllIncidents(String status, String severity, String type, Integer farmId,
+            String q, String sort, int page, int size) {
+        log.info(
+                "Admin fetching all incidents - status: {}, severity: {}, type: {}, farmId: {}, q: {}, page: {}, size: {}",
+                status, severity, type, farmId, q, page, size);
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Incident> incidentPage = incidentRepository.findAll(pageable);
+        Sort sortOrder = Sort.by(Sort.Direction.DESC, "createdAt");
+        if (StringUtils.hasText(sort) && "OLDEST".equalsIgnoreCase(sort)) {
+            sortOrder = Sort.by(Sort.Direction.ASC, "createdAt");
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sortOrder);
+
+        Specification<Incident> spec = buildSpecification(status, severity, type, farmId, q);
+        Page<Incident> incidentPage = incidentRepository.findAll(spec, pageable);
 
         List<IncidentResponse> content = incidentPage.getContent().stream()
-                .filter(i -> status == null || (i.getStatus() != null && i.getStatus().name().equals(status)))
-                .filter(i -> severity == null || (i.getSeverity() != null && i.getSeverity().name().equals(severity)))
-                .filter(i -> type == null || (i.getIncidentType() != null && i.getIncidentType().equals(type)))
                 .map(incidentMapper::toResponse)
                 .collect(Collectors.toList());
 
@@ -273,5 +282,47 @@ public class AdminIncidentService {
             log.warn("Invalid transition attempted: {} -> {}", current, target);
             throw new AppException(ErrorCode.INVALID_INCIDENT_STATUS_TRANSITION);
         }
+    }
+
+    private Specification<Incident> buildSpecification(String status, String severity, String type, Integer farmId,
+            String q) {
+        return (root, query, cb) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+
+            if (StringUtils.hasText(status) && !"ALL".equalsIgnoreCase(status)) {
+                try {
+                    IncidentStatus statusEnum = IncidentStatus.fromCode(status);
+                    predicates.add(cb.equal(root.get("status"), statusEnum));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid incident status filter: {}", status);
+                }
+            }
+
+            if (StringUtils.hasText(severity) && !"ALL".equalsIgnoreCase(severity)) {
+                try {
+                    IncidentSeverity severityEnum = IncidentSeverity.fromCode(severity);
+                    predicates.add(cb.equal(root.get("severity"), severityEnum));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid incident severity filter: {}", severity);
+                }
+            }
+
+            if (StringUtils.hasText(type) && !"ALL".equalsIgnoreCase(type)) {
+                predicates.add(cb.equal(root.get("incidentType"), type));
+            }
+
+            if (farmId != null) {
+                predicates.add(cb.equal(root.get("season").get("plot").get("farm").get("id"), farmId));
+            }
+
+            if (StringUtils.hasText(q) && q.trim().length() >= 2) {
+                String like = "%" + q.trim().toLowerCase() + "%";
+                predicates.add(cb.or(
+                        cb.like(cb.lower(root.get("incidentType")), like),
+                        cb.like(cb.lower(root.get("description")), like)));
+            }
+
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
     }
 }

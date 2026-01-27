@@ -3,6 +3,7 @@ package org.example.QuanLyMuaVu.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.example.QuanLyMuaVu.Enums.PaymentStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -80,6 +81,27 @@ public class Expense {
     @Column(name = "amount")
     BigDecimal amount;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status", nullable = false, length = 20)
+    @Builder.Default
+    PaymentStatus paymentStatus = PaymentStatus.PENDING;
+
+    @ManyToOne
+    @JoinColumn(name = "supplier_id")
+    Supplier supplier;
+
+    @Column(name = "attachment_url")
+    String attachmentUrl;
+
+    @Column(name = "attachment_name")
+    String attachmentName;
+
+    @Column(name = "attachment_mime")
+    String attachmentMime;
+
+    @Column(name = "attachment_path")
+    String attachmentPath;
+
     /**
      * BR: Optional note for the expense.
      */
@@ -91,6 +113,33 @@ public class Expense {
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
+    LocalDateTime deletedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+        if (updatedAt == null) {
+            updatedAt = createdAt;
+        }
+        if (paymentStatus == null) {
+            paymentStatus = PaymentStatus.PENDING;
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+        if (paymentStatus == null) {
+            paymentStatus = PaymentStatus.PENDING;
+        }
+    }
 
     /**
      * Get effective amount (uses amount if set, otherwise totalCost or calculated).

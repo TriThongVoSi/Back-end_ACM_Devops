@@ -28,4 +28,5 @@ public class SeasonResponse {
     String status;
     BigDecimal expectedYieldKg;
     BigDecimal actualYieldKg;
+    BigDecimal budgetAmount;
 }

@@ -499,7 +499,6 @@ public class SeasonServiceTest {
             when(taskRepository.existsBySeason_Id(1)).thenReturn(false);
             when(fieldLogRepository.existsBySeason_Id(1)).thenReturn(false);
             when(harvestRepository.existsBySeason_Id(1)).thenReturn(false);
-            when(expenseRepository.existsBySeason_Id(1)).thenReturn(false);
             doNothing().when(seasonRepository).delete(testSeason);
 
             // Act
@@ -603,7 +602,7 @@ public class SeasonServiceTest {
             when(taskRepository.existsBySeason_Id(1)).thenReturn(false);
             when(fieldLogRepository.existsBySeason_Id(1)).thenReturn(false);
             when(harvestRepository.existsBySeason_Id(1)).thenReturn(false);
-            when(expenseRepository.existsBySeason_Id(1)).thenReturn(true); // Has expenses
+            when(expenseRepository.existsBySeason_IdAndDeletedAtIsNull(1)).thenReturn(true); // Has expenses
 
             // Act & Assert
             AppException exception = assertThrows(AppException.class,
@@ -685,7 +684,6 @@ public class SeasonServiceTest {
             when(taskRepository.existsBySeason_Id(1)).thenReturn(false);
             when(fieldLogRepository.existsBySeason_Id(1)).thenReturn(false);
             when(harvestRepository.existsBySeason_Id(1)).thenReturn(false);
-            when(expenseRepository.existsBySeason_Id(1)).thenReturn(false);
 
             // Act
             seasonService.delete(1);

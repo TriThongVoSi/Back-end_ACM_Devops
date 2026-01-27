@@ -1,13 +1,21 @@
 package org.example.QuanLyMuaVu.Service;
 
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.example.QuanLyMuaVu.DTO.Common.PageResponse;
+import org.example.QuanLyMuaVu.DTO.Response.DocumentMetaResponse;
 import org.example.QuanLyMuaVu.DTO.Response.DocumentResponse;
 import org.example.QuanLyMuaVu.Entity.Document;
 import org.example.QuanLyMuaVu.Entity.DocumentFavorite;
 import org.example.QuanLyMuaVu.Entity.DocumentRecentOpen;
+import org.example.QuanLyMuaVu.Enums.DocumentType;
 import org.example.QuanLyMuaVu.Exception.AppException;
 import org.example.QuanLyMuaVu.Exception.ErrorCode;
+import org.example.QuanLyMuaVu.Repository.CropRepository;
 import org.example.QuanLyMuaVu.Repository.DocumentFavoriteRepository;
 import org.example.QuanLyMuaVu.Repository.DocumentRecentOpenRepository;
 import org.example.QuanLyMuaVu.Repository.DocumentRepository;
@@ -18,10 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -30,20 +35,33 @@ public class DocumentService {
     private final DocumentRepository documentRepository;
     private final DocumentFavoriteRepository documentFavoriteRepository;
     private final DocumentRecentOpenRepository documentRecentOpenRepository;
+    private final CropRepository cropRepository;
+
+    // Static lists for filter options
+    private static final List<String> DEFAULT_STAGES = Arrays.asList(
+            "Planting", "Growing", "Harvest", "Post-Harvest");
+    private static final List<String> DEFAULT_TOPICS = Arrays.asList(
+            "Best Practices", "Pest Management", "Water Management",
+            "Soil Management", "Farm Planning", "Climate Adaptation");
 
     /**
-     * List documents for farmer with filters and tab support
+     * List documents for farmer with filters, type, sort and tab support
      */
     public PageResponse<DocumentResponse> listDocuments(
             String tab,
             String q,
+            String type,
             String crop,
             String stage,
             String topic,
+            String sort,
             int page,
             int size,
             Long userId) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        // Build sort order based on sort param
+        Sort sortOrder = buildSortOrder(sort);
+        Pageable pageable = PageRequest.of(page, size, sortOrder);
         Set<Integer> favoritedIds = documentFavoriteRepository.findDocumentIdsByUserId(userId);
 
         if ("favorites".equalsIgnoreCase(tab)) {
@@ -51,12 +69,80 @@ public class DocumentService {
         } else if ("recent".equalsIgnoreCase(tab)) {
             return listRecentDocuments(userId, pageable, favoritedIds);
         } else {
-            // All documents
-            Page<Document> pageData = documentRepository.findAllVisible(q, crop, stage, topic, pageable);
+            // All documents with type filter
+            DocumentType docType = parseDocumentType(type);
+            Page<Document> pageData;
+
+            if (docType != null) {
+                pageData = documentRepository.findAllVisibleWithType(q, crop, stage, topic, docType, pageable);
+            } else {
+                pageData = documentRepository.findAllVisible(q, crop, stage, topic, pageable);
+            }
+
             List<DocumentResponse> items = pageData.getContent().stream()
                     .map(doc -> toResponse(doc, favoritedIds.contains(doc.getId())))
                     .collect(Collectors.toList());
             return PageResponse.of(pageData, items);
+        }
+    }
+
+    /**
+     * Get document metadata for filter dropdowns
+     */
+    @Transactional(readOnly = true)
+    public DocumentMetaResponse getDocumentMeta() {
+        // Get types from enum
+        List<String> types = Arrays.stream(DocumentType.values())
+                .map(DocumentType::name)
+                .collect(Collectors.toList());
+
+        // Get stages (use distinct from DB or fallback to defaults)
+        List<String> stages = documentRepository.findDistinctStages();
+        if (stages.isEmpty()) {
+            stages = DEFAULT_STAGES;
+        }
+
+        // Get topics (use distinct from DB or fallback to defaults)
+        List<String> topics = documentRepository.findDistinctTopics();
+        if (topics.isEmpty()) {
+            topics = DEFAULT_TOPICS;
+        }
+
+        // Get crops from crop repository
+        List<DocumentMetaResponse.CropOption> crops = cropRepository.findAll().stream()
+                .map(c -> DocumentMetaResponse.CropOption.builder()
+                        .id(c.getId())
+                        .name(c.getCropName())
+                        .build())
+                .collect(Collectors.toList());
+
+        return DocumentMetaResponse.builder()
+                .types(types)
+                .stages(stages)
+                .topics(topics)
+                .crops(crops)
+                .build();
+    }
+
+    private Sort buildSortOrder(String sort) {
+        if (sort == null) {
+            return Sort.by("createdAt").descending();
+        }
+        return switch (sort.toUpperCase()) {
+            case "MOST_VIEWED" -> Sort.by("viewCount").descending();
+            case "RECOMMENDED" -> Sort.by("isPinned").descending().and(Sort.by("createdAt").descending());
+            default -> Sort.by("createdAt").descending(); // NEWEST
+        };
+    }
+
+    private DocumentType parseDocumentType(String type) {
+        if (type == null || type.isBlank()) {
+            return null;
+        }
+        try {
+            return DocumentType.valueOf(type.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
@@ -179,7 +265,9 @@ public class DocumentService {
      */
     public void removeFavorite(Integer documentId, Long userId) {
         documentFavoriteRepository.deleteByUserIdAndDocumentId(userId, documentId);
-    }/**
+    }
+
+    /**
      * Get all documents (legacy method for backward compatibility)
      */
     public List<DocumentResponse> getAll() {
@@ -200,6 +288,9 @@ public class DocumentService {
                 .crop(doc.getCrop())
                 .stage(doc.getStage())
                 .topic(doc.getTopic())
+                .documentType(doc.getDocumentType() != null ? doc.getDocumentType().name() : null)
+                .viewCount(doc.getViewCount())
+                .isPinned(doc.getIsPinned())
                 .isActive(doc.getIsActive())
                 .createdAt(doc.getCreatedAt())
                 .updatedAt(doc.getUpdatedAt())
@@ -228,5 +319,3 @@ public class DocumentService {
         return response;
     }
 }
-
-

@@ -48,6 +48,8 @@ public class CreateSeasonRequest {
 
     BigDecimal expectedYieldKg;
 
+    BigDecimal budgetAmount;
+
     String notes;
 
     /**

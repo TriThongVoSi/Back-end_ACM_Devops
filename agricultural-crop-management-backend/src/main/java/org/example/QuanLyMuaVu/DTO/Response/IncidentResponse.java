@@ -22,6 +22,10 @@ public class IncidentResponse {
     Integer incidentId;
     Integer seasonId;
     String seasonName;
+    Integer plotId;
+    String plotName;
+    Integer farmId;
+    String farmName;
     Long reportedById;
     String reportedByUsername;
     String incidentType;

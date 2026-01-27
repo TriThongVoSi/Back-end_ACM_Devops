@@ -1,18 +1,21 @@
+# =========================================================
+# Production Profile - Override settings for production
+# =========================================================
+
 app:
   mail:
     enabled: ${MAIL_ENABLED:true}
 
 spring:
-  # Production database settings
   jpa:
     hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate} # Only validate, never auto-create
     show-sql: false
     properties:
       hibernate:
         format_sql: false
 
-  # Connection pool settings for production
+  # Connection pool for production
   datasource:
     hikari:
       connection-timeout: 30000
@@ -21,7 +24,6 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
 
-  # Mail configuration
   mail:
     host: ${SMTP_HOST}
     port: ${SMTP_PORT:587}
@@ -44,7 +46,7 @@ logging:
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql: WARN
 
-# Swagger - can be disabled in production via env var
+# Swagger - can be disabled in production
 springdoc:
   api-docs:
     enabled: ${SWAGGER_ENABLED:true}

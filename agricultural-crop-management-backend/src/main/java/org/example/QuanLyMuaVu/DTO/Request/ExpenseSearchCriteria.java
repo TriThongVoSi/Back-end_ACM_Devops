@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.example.QuanLyMuaVu.Enums.PaymentStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,16 +35,32 @@ public class ExpenseSearchCriteria {
     Integer plotId;
 
     /**
+     * Filter by crop ID (optional).
+     * If provided, only expenses for seasons of this crop are returned.
+     */
+    Integer cropId;
+
+    /**
      * Filter by task ID (optional).
      * If provided, only expenses linked to this task are returned.
      */
     Integer taskId;
 
     /**
+     * Filter by supplier/vendor ID (optional).
+     */
+    Integer vendorId;
+
+    /**
      * Filter by category (optional).
      * Matches expenses with the specified category.
      */
     String category;
+
+    /**
+     * Filter by payment status (optional).
+     */
+    PaymentStatus paymentStatus;
 
     /**
      * Filter by expense date range - start date (optional).
@@ -72,4 +89,9 @@ public class ExpenseSearchCriteria {
      * Matches item name containing this keyword.
      */
     String keyword;
+
+    /**
+     * Alternate search term (optional).
+     */
+    String q;
 }

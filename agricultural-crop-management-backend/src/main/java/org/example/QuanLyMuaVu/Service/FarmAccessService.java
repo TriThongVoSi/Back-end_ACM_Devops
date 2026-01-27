@@ -3,6 +3,7 @@ package org.example.QuanLyMuaVu.Service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.example.QuanLyMuaVu.Constant.PredefinedRole;
 import org.example.QuanLyMuaVu.Entity.Farm;
 import org.example.QuanLyMuaVu.Entity.Plot;
 import org.example.QuanLyMuaVu.Entity.Season;
@@ -62,6 +63,13 @@ public class FarmAccessService {
     public List<Integer> getAccessibleFarmIdsForCurrentUser() {
         User currentUser = getCurrentUser();
 
+        if (isAdmin(currentUser)) {
+            return farmRepository.findAll().stream()
+                    .map(Farm::getId)
+                    .filter(id -> id != null)
+                    .toList();
+        }
+
         List<Farm> ownerFarms = farmRepository.findAllByUser(currentUser);
 
         return ownerFarms.stream()
@@ -77,6 +85,10 @@ public class FarmAccessService {
 
         User currentUser = getCurrentUser();
 
+        if (isAdmin(currentUser)) {
+            return;
+        }
+
         if (farm.getUser() != null && farm.getUser().getId().equals(currentUser.getId())) {
             return;
         }
@@ -89,6 +101,11 @@ public class FarmAccessService {
             throw new AppException(ErrorCode.PLOT_NOT_FOUND);
         }
 
+        User currentUser = getCurrentUser();
+        if (isAdmin(currentUser)) {
+            return;
+        }
+
         Farm farm = plot.getFarm();
         if (farm != null) {
             assertCurrentUserCanAccessFarm(farm);
@@ -96,7 +113,6 @@ public class FarmAccessService {
         }
 
         // Legacy fallback when plots are not linked to farms: require direct ownership.
-        User currentUser = getCurrentUser();
         if (plot.getUser() != null && plot.getUser().getId().equals(currentUser.getId())) {
             return;
         }
@@ -107,6 +123,9 @@ public class FarmAccessService {
     public void assertCurrentUserCanAccessSeason(Season season) {
         if (season == null) {
             throw new AppException(ErrorCode.SEASON_NOT_FOUND);
+        }
+        if (isAdmin(getCurrentUser())) {
+            return;
         }
         Plot plot = season.getPlot();
         if (plot == null) {
@@ -119,10 +138,21 @@ public class FarmAccessService {
         if (warehouse == null) {
             throw new AppException(ErrorCode.RESOURCE_NOT_FOUND);
         }
+        if (isAdmin(getCurrentUser())) {
+            return;
+        }
         Farm farm = warehouse.getFarm();
         if (farm == null) {
             throw new AppException(ErrorCode.FORBIDDEN);
         }
         assertCurrentUserCanAccessFarm(farm);
+    }
+
+    private boolean isAdmin(User user) {
+        if (user == null || user.getRoles() == null) {
+            return false;
+        }
+        return user.getRoles().stream()
+                .anyMatch(role -> PredefinedRole.ADMIN_ROLE.equalsIgnoreCase(role.getCode()));
     }
 }

@@ -2,6 +2,7 @@ package org.example.QuanLyMuaVu.DTO.Response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.example.QuanLyMuaVu.Enums.PaymentStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -71,6 +72,21 @@ public class ExpenseResponse {
     BigDecimal amount;
 
     /**
+     * Payment status.
+     */
+    PaymentStatus paymentStatus;
+
+    /**
+     * Supplier/vendor ID.
+     */
+    Integer vendorId;
+
+    /**
+     * Supplier/vendor name.
+     */
+    String vendorName;
+
+    /**
      * BR175/BR179: Expense note/description.
      */
     String note;
@@ -84,6 +100,26 @@ public class ExpenseResponse {
      * Created timestamp.
      */
     LocalDateTime createdAt;
+
+    /**
+     * Updated timestamp.
+     */
+    LocalDateTime updatedAt;
+
+    /**
+     * Attachment URL (receipt/invoice).
+     */
+    String attachmentUrl;
+
+    /**
+     * Attachment filename.
+     */
+    String attachmentName;
+
+    /**
+     * Attachment MIME type.
+     */
+    String attachmentMime;
 
     // ═══════════════════════════════════════════════════════════════
     // LEGACY FIELDS (kept for backward compatibility)

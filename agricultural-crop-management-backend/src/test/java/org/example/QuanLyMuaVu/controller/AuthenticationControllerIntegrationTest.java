@@ -102,7 +102,7 @@ public class AuthenticationControllerIntegrationTest {
                                 .password(passwordEncoder.encode(TEST_PASSWORD))
                                 .fullName("Locked Test User")
                                 .phone("0900000002")
-                                .status(UserStatus.INACTIVE)
+                                .status(UserStatus.LOCKED)
                                 .roles(new HashSet<>(Set.of(farmerRole)))
                                 .build();
                 lockedUser = userRepository.saveAndFlush(lockedUser);
@@ -246,10 +246,10 @@ public class AuthenticationControllerIntegrationTest {
         }
 
         @Test
-        @DisplayName("GET /me without token returns 401")
+        @DisplayName("GET /me without token returns 403")
         void testGetCurrentUserWithoutToken() throws Exception {
                 mockMvc.perform(get("/api/v1/auth/me"))
-                                .andExpect(status().isUnauthorized());
+                                .andExpect(status().isForbidden());
         }
 
         @Test

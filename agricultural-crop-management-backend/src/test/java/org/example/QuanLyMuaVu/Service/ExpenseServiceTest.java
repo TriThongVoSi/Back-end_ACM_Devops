@@ -472,22 +472,23 @@ public class ExpenseServiceTest {
         @DisplayName("Happy Path: Deletes expense when exists")
         void deleteExpense_WhenExists_DeletesSuccessfully() {
             // Arrange
-            when(expenseRepository.existsById(1)).thenReturn(true);
-            doNothing().when(expenseRepository).deleteById(1);
+            when(expenseRepository.findById(1)).thenReturn(Optional.of(testExpense));
+            when(expenseRepository.save(any(Expense.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             // Act
             expenseService.deleteExpense(1);
 
             // Assert
-            verify(expenseRepository).existsById(1);
-            verify(expenseRepository).deleteById(1);
+            ArgumentCaptor<Expense> expenseCaptor = ArgumentCaptor.forClass(Expense.class);
+            verify(expenseRepository).save(expenseCaptor.capture());
+            assertNotNull(expenseCaptor.getValue().getDeletedAt(), "deletedAt should be set for soft delete");
         }
 
         @Test
         @DisplayName("Negative Case: Throws RuntimeException when expense not found")
         void deleteExpense_WhenNotFound_ThrowsRuntimeException() {
             // Arrange
-            when(expenseRepository.existsById(999)).thenReturn(false);
+            when(expenseRepository.findById(999)).thenReturn(Optional.empty());
 
             // Act & Assert
             RuntimeException exception = assertThrows(RuntimeException.class,
@@ -495,7 +496,7 @@ public class ExpenseServiceTest {
                     "Should throw RuntimeException when expense not found");
 
             assertEquals("Expense not found", exception.getMessage());
-            verify(expenseRepository, never()).deleteById(any());
+            verify(expenseRepository, never()).save(any());
         }
     }
 

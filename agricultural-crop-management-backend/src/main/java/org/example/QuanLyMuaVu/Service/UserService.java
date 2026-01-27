@@ -190,7 +190,7 @@ public class UserService {
 
         try {
             Long userId = Long.parseLong(identifier);
-            return userRepository.findById(userId)
+            return userRepository.findByIdWithRoles(userId)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         } catch (NumberFormatException ex) {
             return userRepository.findByIdentifierWithRoles(identifier)

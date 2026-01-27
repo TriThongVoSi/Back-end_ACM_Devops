@@ -1,6 +1,7 @@
 package org.example.QuanLyMuaVu.DTO.Request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ public class ResetPasswordRequest {
     String username;
 
     @NotBlank(message = "PASSWORD_BLANK")
-    @Size(min = 8, message = "PASSWORD_INVALID")
+    @Size(min = 8, max = 64, message = "PASSWORD_LENGTH_INVALID")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,64}$", message = "PASSWORD_POLICY_INVALID")
     String newPassword;
 }
-

@@ -1,8 +1,5 @@
 package org.example.QuanLyMuaVu.Controller;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.example.QuanLyMuaVu.DTO.Common.ApiResponse;
 import org.example.QuanLyMuaVu.DTO.Request.FarmerUpdateRequest;
 import org.example.QuanLyMuaVu.DTO.Request.UserProfileUpdateRequest;
@@ -16,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
@@ -24,19 +25,19 @@ public class UserController {
 
     UserService userService;
 
-    @PreAuthorize("hasAnyRole('BUYER','FARMER')")
+    @PreAuthorize("hasAnyRole('ADMIN','BUYER','FARMER')")
     @GetMapping("/me")
     public ApiResponse<FarmerResponse> me() {
         return ApiResponse.success(userService.getMyInfo());
     }
 
-    @PreAuthorize("hasAnyRole('BUYER','FARMER')")
+    @PreAuthorize("hasAnyRole('ADMIN','BUYER','FARMER')")
     @PutMapping("/profile")
     public ApiResponse<FarmerResponse> updateProfile(@RequestBody UserProfileUpdateRequest request) {
         return ApiResponse.success(userService.updateProfile(request));
     }
 
-    @PreAuthorize("hasAnyRole('BUYER','FARMER')")
+    @PreAuthorize("hasAnyRole('ADMIN','BUYER','FARMER')")
     @PutMapping("/change-password")
     public ApiResponse<FarmerResponse> changePassword(@Valid @RequestBody FarmerUpdateRequest request) {
         return ApiResponse.success(userService.changeMyPassword(request));

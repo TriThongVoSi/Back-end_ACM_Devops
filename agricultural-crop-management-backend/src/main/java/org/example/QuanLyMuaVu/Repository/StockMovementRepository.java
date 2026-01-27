@@ -70,4 +70,91 @@ public interface StockMovementRepository extends JpaRepository<StockMovement, In
          * Find all movements for a warehouse (simpler version)
          */
         Page<StockMovement> findByWarehouseOrderByMovementDateDesc(Warehouse warehouse, Pageable pageable);
+
+        @Query("""
+                        select f.id as farmId,
+                               f.name as farmName,
+                               sl.id as lotId,
+                               si.name as itemName,
+                               sl.expiryDate as expiryDate,
+                               sum(case when m.movementType = org.example.QuanLyMuaVu.Enums.StockMovementType.IN then m.quantity
+                                        when m.movementType = org.example.QuanLyMuaVu.Enums.StockMovementType.OUT then -m.quantity
+                                        else m.quantity end) as onHand
+                        from StockMovement m
+                        join m.warehouse w
+                        join w.farm f
+                        join m.supplyLot sl
+                        join sl.supplyItem si
+                        where (:farmId is null or f.id = :farmId)
+                        group by f.id, f.name, sl.id, si.name, sl.expiryDate
+                        having sum(case when m.movementType = org.example.QuanLyMuaVu.Enums.StockMovementType.IN then m.quantity
+                                        when m.movementType = org.example.QuanLyMuaVu.Enums.StockMovementType.OUT then -m.quantity
+                                        else m.quantity end) > 0
+                        """)
+        List<InventoryLotOnHandProjection> findOnHandLotsByFarm(@Param("farmId") Integer farmId);
+
+        @Query("""
+                        select f.id as farmId,
+                               f.name as farmName,
+                               sl.id as lotId,
+                               si.id as itemId,
+                               si.name as itemName,
+                               sl.batchCode as lotCode,
+                               sl.expiryDate as expiryDate,
+                               si.unit as unit,
+                               sum(case when m.movementType = org.example.QuanLyMuaVu.Enums.StockMovementType.IN then m.quantity
+                                        when m.movementType = org.example.QuanLyMuaVu.Enums.StockMovementType.OUT then -m.quantity
+                                        else m.quantity end) as onHand
+                        from StockMovement m
+                        join m.warehouse w
+                        join w.farm f
+                        join m.supplyLot sl
+                        join sl.supplyItem si
+                        where (:farmId is null or f.id = :farmId)
+                          and (:q is null or lower(si.name) like lower(concat('%', :q, '%'))
+                               or lower(sl.batchCode) like lower(concat('%', :q, '%')))
+                        group by f.id, f.name, sl.id, si.id, si.name, sl.batchCode, sl.expiryDate, si.unit
+                        having sum(case when m.movementType = org.example.QuanLyMuaVu.Enums.StockMovementType.IN then m.quantity
+                                        when m.movementType = org.example.QuanLyMuaVu.Enums.StockMovementType.OUT then -m.quantity
+                                        else m.quantity end) > 0
+                        """)
+        List<InventoryLotRiskProjection> findOnHandLotsWithDetails(
+                        @Param("farmId") Integer farmId,
+                        @Param("q") String q);
+
+        List<StockMovement> findBySupplyLot_IdOrderByMovementDateDesc(Integer supplyLotId);
+
+        interface InventoryLotOnHandProjection {
+                Integer getFarmId();
+
+                String getFarmName();
+
+                Integer getLotId();
+
+                String getItemName();
+
+                java.time.LocalDate getExpiryDate();
+
+                BigDecimal getOnHand();
+        }
+
+        interface InventoryLotRiskProjection {
+                Integer getFarmId();
+
+                String getFarmName();
+
+                Integer getLotId();
+
+                Integer getItemId();
+
+                String getItemName();
+
+                String getLotCode();
+
+                java.time.LocalDate getExpiryDate();
+
+                String getUnit();
+
+                BigDecimal getOnHand();
+        }
 }

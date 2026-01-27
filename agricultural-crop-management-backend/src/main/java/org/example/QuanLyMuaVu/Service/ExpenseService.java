@@ -42,6 +42,7 @@ public class ExpenseService {
                 .unitPrice(request.getUnitPrice())
                 .quantity(request.getQuantity())
                 .totalCost(request.getUnitPrice().multiply(BigDecimal.valueOf(request.getQuantity())))
+                .amount(request.getUnitPrice().multiply(BigDecimal.valueOf(request.getQuantity())))
                 .expenseDate(request.getExpenseDate())
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -64,6 +65,7 @@ public class ExpenseService {
     public List<ExpenseResponse> getAllExpenses() {
         return expenseRepository.findAll()
                 .stream()
+                .filter(expense -> expense.getDeletedAt() == null)
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -74,6 +76,7 @@ public class ExpenseService {
     public List<ExpenseResponse> searchExpensesByName(String name) {
         return expenseRepository.findByItemNameContainingIgnoreCase(name)
                 .stream()
+                .filter(expense -> expense.getDeletedAt() == null)
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -96,6 +99,7 @@ public class ExpenseService {
         expense.setUnitPrice(request.getUnitPrice());
         expense.setQuantity(request.getQuantity());
         expense.setTotalCost(request.getUnitPrice().multiply(BigDecimal.valueOf(request.getQuantity())));
+        expense.setAmount(request.getUnitPrice().multiply(BigDecimal.valueOf(request.getQuantity())));
         expense.setExpenseDate(request.getExpenseDate());
 
         return mapToResponse(expenseRepository.save(expense));
@@ -105,10 +109,10 @@ public class ExpenseService {
     // DELETE
     // ---------------------------
     public void deleteExpense(Integer id) {
-        if (!expenseRepository.existsById(id)) {
-            throw new RuntimeException("Expense not found");
-        }
-        expenseRepository.deleteById(id);
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expense not found"));
+        expense.setDeletedAt(LocalDateTime.now());
+        expenseRepository.save(expense);
     }
 
     // ---------------------------

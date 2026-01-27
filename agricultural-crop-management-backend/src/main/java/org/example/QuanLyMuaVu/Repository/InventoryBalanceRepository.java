@@ -73,4 +73,19 @@ public interface InventoryBalanceRepository extends JpaRepository<InventoryBalan
             @Param("lot") SupplyLot lot,
             @Param("warehouse") Warehouse warehouse,
             @Param("location") StockLocation location);
+
+    @Query("""
+            SELECT ib FROM InventoryBalance ib
+            JOIN FETCH ib.warehouse w
+            LEFT JOIN FETCH ib.location l
+            WHERE ib.supplyLot.id = :lotId
+            """)
+    java.util.List<InventoryBalance> findBySupplyLotIdWithDetails(@Param("lotId") Integer lotId);
+
+    @Query("""
+            SELECT COALESCE(SUM(ib.quantity), 0)
+            FROM InventoryBalance ib
+            WHERE ib.supplyLot.id = :lotId
+            """)
+    BigDecimal sumQuantityBySupplyLotId(@Param("lotId") Integer lotId);
 }

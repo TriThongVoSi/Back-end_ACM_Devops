@@ -8,8 +8,11 @@ import org.example.QuanLyMuaVu.DTO.Common.PageResponse;
 import org.example.QuanLyMuaVu.DTO.Request.AdminUserCreateRequest;
 import org.example.QuanLyMuaVu.DTO.Request.AdminUserStatusUpdateRequest;
 import org.example.QuanLyMuaVu.DTO.Request.AdminUserUpdateRequest;
+import org.example.QuanLyMuaVu.DTO.Request.AdminUserWarningRequest;
+import org.example.QuanLyMuaVu.DTO.Response.AdminUserWarningResponse;
 import org.example.QuanLyMuaVu.Service.Admin.AdminUserCommandService;
 import org.example.QuanLyMuaVu.Service.Admin.AdminUserQueryService;
+import org.example.QuanLyMuaVu.Service.Admin.AdminUserWarningService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +37,7 @@ public class AdminUserController {
 
         private final AdminUserQueryService adminUserQueryService;
         private final AdminUserCommandService adminUserCommandService;
+        private final AdminUserWarningService adminUserWarningService;
 
         /**
          * GET /api/v1/admin/users
@@ -115,6 +119,19 @@ public class AdminUserController {
                 AdminUserCommandService.AdminUserResponse user = adminUserCommandService.updateStatus(id,
                                 request.getStatus());
                 return ResponseEntity.ok(ApiResponse.success("User status updated successfully", user));
+        }
+
+        /**
+         * POST /api/v1/admin/users/{id}/warnings
+         * Issue a warning or lock action to a user.
+         */
+        @PostMapping("/{id}/warnings")
+        public ResponseEntity<ApiResponse<AdminUserWarningResponse>> warnUser(
+                        @PathVariable Long id,
+                        @Valid @RequestBody AdminUserWarningRequest request) {
+                log.info("Admin issuing warning for user ID: {}", id);
+                AdminUserWarningResponse response = adminUserWarningService.warnUser(id, request);
+                return ResponseEntity.ok(ApiResponse.success("Warning sent successfully", response));
         }
 
         /**

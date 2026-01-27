@@ -229,6 +229,7 @@ public class SeasonService {
                 .initialPlantCount(request.getInitialPlantCount())
                 .currentPlantCount(request.getInitialPlantCount())
                 .expectedYieldKg(request.getExpectedYieldKg())
+                .budgetAmount(request.getBudgetAmount())
                 .notes(request.getNotes())
                 .build();
 
@@ -284,6 +285,7 @@ public class SeasonService {
         season.setCurrentPlantCount(request.getCurrentPlantCount());
         season.setExpectedYieldKg(request.getExpectedYieldKg());
         season.setActualYieldKg(request.getActualYieldKg());
+        season.setBudgetAmount(request.getBudgetAmount());
         season.setNotes(request.getNotes());
 
         if (request.getVarietyId() != null) {
@@ -334,7 +336,7 @@ public class SeasonService {
         boolean hasTasks = taskRepository.existsBySeason_Id(id);
         boolean hasFieldLogs = fieldLogRepository.existsBySeason_Id(id);
         boolean hasHarvests = harvestRepository.existsBySeason_Id(id);
-        boolean hasExpenses = expenseRepository.existsBySeason_Id(id);
+        boolean hasExpenses = expenseRepository.existsBySeason_IdAndDeletedAtIsNull(id);
 
         if (hasTasks || hasFieldLogs || hasHarvests || hasExpenses) {
             throw new AppException(ErrorCode.SEASON_HAS_CHILD_RECORDS);

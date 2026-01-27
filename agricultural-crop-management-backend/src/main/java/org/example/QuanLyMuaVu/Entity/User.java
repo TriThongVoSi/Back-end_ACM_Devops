@@ -38,7 +38,7 @@ public class User {
     @Column(name = "user_id")
     Long id;
 
-    @Column(name = "user_name", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
+    @Column(name = "user_name", unique = true, length = 255)
     String username;
 
     /**
@@ -66,6 +66,9 @@ public class User {
     @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
     @Column(name = "status", nullable = false)
     UserStatus status = UserStatus.ACTIVE;
+
+    @Column(name = "locked_until")
+    LocalDateTime lockedUntil;
 
     @ManyToOne
     @JoinColumn(name = "province_id")

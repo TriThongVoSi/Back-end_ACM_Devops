@@ -41,4 +41,3 @@ public class Supplier {
     @Column(name = "contact_phone", length = 30)
     String contactPhone;
 }
-

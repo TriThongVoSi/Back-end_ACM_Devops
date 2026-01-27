@@ -1,7 +1,8 @@
 package org.example.QuanLyMuaVu.Exception;
 
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
+
+import lombok.Getter;
 
 @Getter
 public enum ErrorCode {
@@ -32,11 +33,16 @@ public enum ErrorCode {
         USERNAME_ALREADY_EXISTS("ERR_USERNAME_ALREADY_EXISTS", "Username is already in use", HttpStatus.CONFLICT),
         EMAIL_ALREADY_EXISTS("ERR_EMAIL_ALREADY_EXISTS", "Email is already in use", HttpStatus.CONFLICT),
         INVALID_CREDENTIALS("INVALID_CREDENTIALS", "Invalid username/email or password.", HttpStatus.UNAUTHORIZED),
-        USER_INACTIVE("ERR_USER_INACTIVE", "Your account has been deactivated. Please contact administrator.", HttpStatus.FORBIDDEN),
-        USER_LOCKED("USER_LOCKED", "Your account has been locked by administrator. Please contact support for assistance.", HttpStatus.FORBIDDEN),
+        USER_INACTIVE("ERR_USER_INACTIVE", "Your account has been deactivated. Please contact administrator.",
+                        HttpStatus.FORBIDDEN),
+        USER_LOCKED("USER_LOCKED",
+                        "Your account has been locked by administrator. Please contact support for assistance.",
+                        HttpStatus.FORBIDDEN),
         USER_HAS_ASSOCIATED_DATA("ERR_USER_HAS_ASSOCIATED_DATA", "Cannot delete user with associated farms or data",
                         HttpStatus.CONFLICT),
         ROLE_MISSING("ROLE_MISSING", "User has no assigned role.", HttpStatus.FORBIDDEN),
+        ROLE_NOT_FOUND("ROLE_NOT_FOUND", "Role not found.", HttpStatus.NOT_FOUND),
+        ROLE_CODE_EXISTS("ROLE_CODE_EXISTS", "Role with this code already exists.", HttpStatus.CONFLICT),
         NOT_OWNER("NOT_OWNER", "Access denied: you do not own this resource.", HttpStatus.FORBIDDEN),
         IDENTIFIER_REQUIRED("IDENTIFIER_REQUIRED", "Email or username is required for login.", HttpStatus.BAD_REQUEST),
 
@@ -138,6 +144,8 @@ public enum ErrorCode {
         SUPPLY_ITEM_NOT_FOUND("ERR_SUPPLY_ITEM_NOT_FOUND", "Supply item not found", HttpStatus.NOT_FOUND),
         RESTRICTED_CONFIRM_REQUIRED("ERR_RESTRICTED_CONFIRM_REQUIRED",
                         "Confirmation is required to handle restricted supplies", HttpStatus.BAD_REQUEST),
+        SUPPLIER_HAS_LOTS("ERR_SUPPLIER_HAS_LOTS",
+                        "Cannot delete supplier with associated supply lots", HttpStatus.BAD_REQUEST),
 
         // Incident errors
         INCIDENT_NOT_FOUND("ERR_INCIDENT_NOT_FOUND", "Incident not found", HttpStatus.NOT_FOUND),

@@ -3,6 +3,8 @@ package org.example.QuanLyMuaVu.Repository;
 import org.example.QuanLyMuaVu.Entity.Season;
 import org.example.QuanLyMuaVu.Entity.User;
 import org.example.QuanLyMuaVu.Enums.SeasonStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +21,10 @@ public interface SeasonRepository extends JpaRepository<Season, Integer>,
         List<Season> findByPlot(org.example.QuanLyMuaVu.Entity.Plot plot);
 
         List<Season> findBySeasonNameContainingIgnoreCase(String seasonName);
+
+        Page<Season> findBySeasonNameContainingIgnoreCase(String seasonName, Pageable pageable);
+
+        Page<Season> findByPlot_Farm_IdInAndSeasonNameContainingIgnoreCase(Iterable<Integer> farmIds, String seasonName, Pageable pageable);
 
         boolean existsBySeasonNameIgnoreCase(String seasonName);
 
@@ -150,10 +156,12 @@ public interface SeasonRepository extends JpaRepository<Season, Integer>,
                         "AND (:to IS NULL OR s.startDate < :to) " +
                         "AND (:cropId IS NULL OR s.crop.id = :cropId) " +
                         "AND (:farmId IS NULL OR s.plot.farm.id = :farmId) " +
-                        "AND (:plotId IS NULL OR s.plot.id = :plotId)")
+                        "AND (:plotId IS NULL OR s.plot.id = :plotId) " +
+                        "AND (:varietyId IS NULL OR s.variety.id = :varietyId)")
         List<Season> findByFilters(@Param("from") LocalDate from,
                         @Param("to") LocalDate to,
                         @Param("cropId") Integer cropId,
                         @Param("farmId") Integer farmId,
-                        @Param("plotId") Integer plotId);
+                        @Param("plotId") Integer plotId,
+                        @Param("varietyId") Integer varietyId);
 }

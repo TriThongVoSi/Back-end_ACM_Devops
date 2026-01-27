@@ -55,9 +55,15 @@ public class AdminIncidentController {
             @Parameter(description = "Filter by status (OPEN, IN_PROGRESS, RESOLVED, CANCELLED)") @RequestParam(value = "status", required = false) String status,
             @Parameter(description = "Filter by severity (LOW, MEDIUM, HIGH)") @RequestParam(value = "severity", required = false) String severity,
             @Parameter(description = "Filter by incident type") @RequestParam(value = "type", required = false) String type,
+            @Parameter(description = "Filter by farm ID") @RequestParam(value = "farmId", required = false) Integer farmId,
+            @Parameter(description = "Search title/description") @RequestParam(value = "q", required = false) String q,
+            @Parameter(description = "Sort order (NEWEST, OLDEST)") @RequestParam(value = "sort", required = false) String sort,
             @Parameter(description = "Page index (0-based)") @RequestParam(value = "page", defaultValue = "0") int page,
-            @Parameter(description = "Page size") @RequestParam(value = "size", defaultValue = "20") int size) {
-        return ApiResponse.success(adminIncidentService.getAllIncidents(status, severity, type, page, size));
+            @Parameter(description = "Page size") @RequestParam(value = "size", required = false) Integer size,
+            @Parameter(description = "Page size (limit alias)") @RequestParam(value = "limit", required = false) Integer limit) {
+        int resolvedSize = limit != null ? limit : (size != null ? size : 20);
+        return ApiResponse.success(
+                adminIncidentService.getAllIncidents(status, severity, type, farmId, q, sort, page, resolvedSize));
     }
 
     @Operation(summary = "Get incident detail (Admin)", description = "Get detailed information about a specific incident")

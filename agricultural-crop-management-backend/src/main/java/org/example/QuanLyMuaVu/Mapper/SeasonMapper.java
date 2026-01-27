@@ -24,6 +24,7 @@ public class SeasonMapper {
                 .status(season.getStatus() != null ? season.getStatus().getCode() : null)
                 .expectedYieldKg(season.getExpectedYieldKg())
                 .actualYieldKg(season.getActualYieldKg())
+                .budgetAmount(season.getBudgetAmount())
                 .build();
     }
 
@@ -48,6 +49,7 @@ public class SeasonMapper {
                 .currentPlantCount(season.getCurrentPlantCount())
                 .expectedYieldKg(season.getExpectedYieldKg())
                 .actualYieldKg(season.getActualYieldKg())
+                .budgetAmount(season.getBudgetAmount())
                 .notes(season.getNotes())
                 .build();
     }

@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.example.QuanLyMuaVu.Enums.PaymentStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -62,11 +63,21 @@ public class CreateExpenseRequest {
     String category;
 
     /**
-     * BR175: [cmbPlotID] - Plot ID for validation (mandatory).
-     * Used to verify season belongs to this plot.
+     * BR175: [cmbPlotID] - Plot ID for validation (optional).
+     * If provided, used to verify season belongs to this plot.
+     */
+    Integer plotId;
+
+    /**
+     * Payment status (mandatory).
      */
     @NotNull(message = "MSG_1")
-    Integer plotId;
+    PaymentStatus paymentStatus;
+
+    /**
+     * Optional supplier/vendor reference.
+     */
+    Integer vendorId;
 
     /**
      * BR175: [cmbTaskID] - Task ID (optional).

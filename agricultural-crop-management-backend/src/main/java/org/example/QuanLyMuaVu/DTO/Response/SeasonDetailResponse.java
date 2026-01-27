@@ -33,5 +33,6 @@ public class SeasonDetailResponse {
     Integer currentPlantCount;
     BigDecimal expectedYieldKg;
     BigDecimal actualYieldKg;
+    BigDecimal budgetAmount;
     String notes;
 }

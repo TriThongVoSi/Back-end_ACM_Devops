@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SupplierRepository extends JpaRepository<Supplier, Integer> {
 
-    @Query("""
-            SELECT s FROM Supplier s
-            WHERE (:q IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :q, '%')))
-            ORDER BY s.name
-            """)
-    Page<Supplier> searchByName(@Param("q") String q, Pageable pageable);
+        @Query("""
+                        SELECT s FROM Supplier s
+                        WHERE (:q IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :q, '%')))
+                        ORDER BY s.name
+                        """)
+        Page<Supplier> searchByName(@Param("q") String q, Pageable pageable);
 }

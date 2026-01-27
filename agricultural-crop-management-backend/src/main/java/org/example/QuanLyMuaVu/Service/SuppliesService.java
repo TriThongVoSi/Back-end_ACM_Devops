@@ -1,10 +1,14 @@
 package org.example.QuanLyMuaVu.Service;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.example.QuanLyMuaVu.DTO.Common.PageResponse;
+import org.example.QuanLyMuaVu.DTO.Request.CreateSupplierRequest;
 import org.example.QuanLyMuaVu.DTO.Request.StockInRequest;
+import org.example.QuanLyMuaVu.DTO.Request.UpdateSupplierRequest;
 import org.example.QuanLyMuaVu.DTO.Response.StockInResponse;
 import org.example.QuanLyMuaVu.DTO.Response.StockMovementResponse;
 import org.example.QuanLyMuaVu.DTO.Response.SupplierResponse;
@@ -30,10 +34,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +63,46 @@ public class SuppliesService {
                 .map(this::toSupplierResponse)
                 .collect(Collectors.toList());
         return PageResponse.of(page, items);
+    }
+
+    @Transactional(readOnly = true)
+    public SupplierResponse getSupplierById(Integer id) {
+        Supplier supplier = supplierRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND));
+        return toSupplierResponse(supplier);
+    }
+
+    public SupplierResponse createSupplier(CreateSupplierRequest request) {
+        Supplier supplier = Supplier.builder()
+                .name(request.getName())
+                .licenseNo(request.getLicenseNo())
+                .contactEmail(request.getContactEmail())
+                .contactPhone(request.getContactPhone())
+                .build();
+        supplier = supplierRepository.save(supplier);
+        return toSupplierResponse(supplier);
+    }
+
+    public SupplierResponse updateSupplier(Integer id, UpdateSupplierRequest request) {
+        Supplier supplier = supplierRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND));
+        supplier.setName(request.getName());
+        supplier.setLicenseNo(request.getLicenseNo());
+        supplier.setContactEmail(request.getContactEmail());
+        supplier.setContactPhone(request.getContactPhone());
+        supplier = supplierRepository.save(supplier);
+        return toSupplierResponse(supplier);
+    }
+
+    public void deleteSupplier(Integer id) {
+        Supplier supplier = supplierRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.SUPPLIER_NOT_FOUND));
+        // Check if supplier has any supply lots
+        boolean hasLots = supplyLotRepository.existsBySupplierId(id);
+        if (hasLots) {
+            throw new AppException(ErrorCode.SUPPLIER_HAS_LOTS);
+        }
+        supplierRepository.delete(supplier);
     }
 
     // ============================================
