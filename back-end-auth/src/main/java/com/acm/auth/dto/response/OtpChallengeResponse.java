@@ -1,0 +1,17 @@
+package com.acm.auth.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class OtpChallengeResponse {
+    private String message;
+    private String nextStep;
+    private String emailMasked;
+    private Long expiresInSeconds;
+}

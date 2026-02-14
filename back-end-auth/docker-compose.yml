@@ -1,0 +1,19 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_auth
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-trithong}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-your_name_database}
+      MYSQL_USER: ${MYSQL_USER:-springuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-springpass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_auth_data:/var/lib/mysql
+      - ./init-mysql.sql:/docker-entrypoint-initdb.d/init-mysql.sql
+    command: --default-authentication-plugin=mysql_native_password
+
+volumes:
+  mysql_auth_data:

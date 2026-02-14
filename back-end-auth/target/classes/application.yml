@@ -1,0 +1,84 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: auth-service
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/your_name_database?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USER:springuser}
+    password: ${DB_PASS:springpass}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  mail:
+    host: ${SMTP_HOST:}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${SMTP_AUTH:true}
+          starttls:
+            enable: ${SMTP_STARTTLS:true}
+    default-encoding: UTF-8
+
+# JWT Configuration
+jwt:
+  signer-key: ${JWT_SIGNER_KEY:z0B8QFwXP+Lv6F8X9Q3mVHrS5uK2jN4wR7bT0dGhJc8pYaM1kIzEoDcA2xWnUf3=}
+  valid-duration: ${JWT_VALID_DURATION:3600}
+  refreshable-duration: ${JWT_REFRESHABLE_DURATION:86400}
+
+reset-token:
+  valid-minutes: ${RESET_TOKEN_VALID_MINUTES:10}
+
+otp:
+  expiry-minutes: ${OTP_EXPIRY_MINUTES:5}
+  max-attempts: ${OTP_MAX_ATTEMPTS:5}
+  resend-cooldown-seconds: ${OTP_RESEND_COOLDOWN_SECONDS:60}
+  hash-secret: ${OTP_HASH_SECRET:s3cr3t-0tp-h@sh-k3y-ch@ng3-1n-pr0d}
+
+# CORS Configuration
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowed-headers: "*"
+
+# Swagger/OpenAPI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
+# Default Admin Configuration (for initialization)
+# Override these in production via environment variables
+app:
+  mail:
+    from: ${SMTP_FROM:no-reply@example.com}
+    from-name: ${SMTP_FROM_NAME:Auth Service}
+  init:
+    admin:
+      username: ${ADMIN_USERNAME:admin}
+      email: ${ADMIN_EMAIL:admin@acm.local}
+      password: ${ADMIN_PASSWORD:admin123}
+      full-name: ${ADMIN_FULL_NAME:Administrator}
+      phone: ${ADMIN_PHONE:0900000000}
+    # Set to false to skip creating default test users in production
+    create-test-users: ${CREATE_TEST_USERS:true}
+
+# Google OAuth2 Configuration
+google:
+  client-id: ${GOOGLE_CLIENT_ID:}
+  client-secret: ${GOOGLE_CLIENT_SECRET:}
