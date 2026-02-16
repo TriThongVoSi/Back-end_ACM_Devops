@@ -1,0 +1,48 @@
+# ===========================
+# Environment & Secrets
+# ===========================
+.env
+.env.local
+.env.*.local
+
+# Google OAuth Client Secret JSON
+client_secret_*.json
+
+# ===========================
+# Java / Maven Build
+# ===========================
+target/
+*.jar
+*.war
+*.class
+*.log
+
+# Maven Wrapper (optional)
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+# ===========================
+# IntelliJ IDEA / JetBrains
+# ===========================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ===========================
+# OS Generated
+# ===========================
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ===========================
+# Misc
+# ===========================
+*.tmp
+*.bak
+*.orig
+*.swp
+*.swo
+logs/
